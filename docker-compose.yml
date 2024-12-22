@@ -1,0 +1,54 @@
+services:
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-7.0-latest
+    container_name: zbx_server
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ZBX_NODEADDRESS: ${SERVER_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      HANodeName: ${HA_NODE_NAME}
+      HANodePass: ${HA_NODE_PASS}
+    networks:
+      - zbx-net
+
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: zbx_postgres
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TIMESCALEDB_TELEMETRY: "off"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - zbx-net
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
+    container_name: zbx_web
+    restart: unless-stopped
+    depends_on:
+      - zabbix-server
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${ZBX_WEB_PORT}:8080"
+    networks:
+      - zbx-net
+
+
+networks:
+  zbx-net:
+    driver: bridge
