@@ -17,8 +17,13 @@
    work_mem = 128MB
    maintenance_work_mem = 2GB
 ```
-5. psql -U zabbix -d zabbix_db
-6. ```CREATE ROLE replica_user WITH REPLICATION LOGIN PASSWORD 'replica_password';```
+5. **Write-Ahead Log (WAL) Settings:**
+   ```plaintext
+   wal_buffers = 32MB
+   checkpoint_completion_target = 0.9
+   ```
+6. psql -U zabbix -d zabbix_db
+7. ```CREATE ROLE replica_user WITH REPLICATION LOGIN PASSWORD 'replica_password';```
 
 
 ### Zabbix Optimization
