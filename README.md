@@ -12,9 +12,36 @@
    shared_buffers = 512MB
    max_connections = 100            
    listen_addresses = '*'
+   OR
+   shared_buffers = 4GB
+   work_mem = 128MB
+   maintenance_work_mem = 2GB
 ```
-4. psql -U zabbix -d zabbix_db
-5. ```CREATE ROLE replica_user WITH REPLICATION LOGIN PASSWORD 'replica_password';```
+5. psql -U zabbix -d zabbix_db
+6. ```CREATE ROLE replica_user WITH REPLICATION LOGIN PASSWORD 'replica_password';```
+
+
+### Zabbix Optimization
+
+1. **Cache Settings in `zabbix_server.conf`:**
+   ```plaintext
+   CacheSize=512M
+   HistoryCacheSize=256M
+   HistoryTextCacheSize=128M
+   ValueCacheSize=256M
+   ```
+
+2. **Enable More Preprocessors:**
+   ```plaintext
+   StartPreprocessors=16
+   ```
+
+3. **Database Housekeeping:**
+   - Regularly archive historical data to optimize query performance.
+
+---
+
+
 
 ## on slave Side
 ***
